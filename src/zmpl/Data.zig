@@ -1497,6 +1497,7 @@ pub const Value = union(ValueType) {
             bool => switch (self) {
                 .boolean => |capture| capture.value,
                 .string => |capture| std.mem.eql(u8, capture.value, "1") or std.mem.eql(u8, capture.value, "on"),
+                .null => false,
                 else => |tag| zmplError(
                     .compare,
                     "Cannot compare Zmpl `{s}` with `{s}`",

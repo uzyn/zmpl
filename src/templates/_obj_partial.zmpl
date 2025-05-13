@@ -3,7 +3,7 @@
 <div>User name: {{user.name}}</div>
 
 @if ($.user.is_subscriber)
-  <div>User is a subscriber.</div>
+<div>User is a subscriber.</div>
 @else
-  <div>Not a subscriber.</div>
+<div>Not a subscriber.</div>
 @end
