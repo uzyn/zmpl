@@ -67,6 +67,36 @@ test "object passing to partial" {
             \\<div>User email: john@example.com</div>
             \\<div>User name: John Doe</div>
             \\
+            \\<div>Welcome, John!</div>
+            \\
+        , output);
+    } else {
+        try std.testing.expect(false);
+    }
+}
+
+test "object passing to partial with string comparison - non-matching email" {
+    var data = zmpl.Data.init(std.testing.allocator);
+    defer data.deinit();
+
+    var root = try data.root(.object);
+    var user = try data.object();
+
+    try user.put("email", data.string("alice@example.com"));
+    try user.put("name", data.string("Alice Smith"));
+
+    try root.put("user", user);
+
+    if (zmpl.find("object_root_layout")) |template| {
+        const output = try template.render(&data, Context, .{}, &.{}, .{});
+
+        try std.testing.expectEqualStrings(
+            \\<h1>User</h1>
+            \\<div>User email: alice@example.com</div>
+            \\<div>User name: Alice Smith</div>
+            \\
+            \\<div>Not John.</div>
+            \\
         , output);
     } else {
         try std.testing.expect(false);
