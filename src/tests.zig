@@ -56,6 +56,7 @@ test "object passing to partial" {
 
     try user.put("email", data.string("john@example.com"));
     try user.put("name", data.string("John Doe"));
+    try user.put("is_subscriber", false);
 
     try root.put("user", user);
 
@@ -66,6 +67,66 @@ test "object passing to partial" {
             \\<h1>User</h1>
             \\<div>User email: john@example.com</div>
             \\<div>User name: John Doe</div>
+            \\
+            \\<div>Not a subscriber.</div>
+            \\
+        , output);
+    } else {
+        try std.testing.expect(false);
+    }
+}
+
+test "object passing to partial - bool" {
+    var data = zmpl.Data.init(std.testing.allocator);
+    defer data.deinit();
+
+    var root = try data.root(.object);
+    var user = try data.object();
+
+    try user.put("email", data.string("jane@example.com"));
+    try user.put("name", data.string("Jane Smith"));
+    try user.put("is_subscriber", true);
+
+    try root.put("user", user);
+
+    if (zmpl.find("object_root_layout")) |template| {
+        const output = try template.render(&data, Context, .{}, &.{}, .{});
+
+        try std.testing.expectEqualStrings(
+            \\<h1>User</h1>
+            \\<div>User email: jane@example.com</div>
+            \\<div>User name: Jane Smith</div>
+            \\
+            \\<div>User is a subscriber.</div>
+            \\
+        , output);
+    } else {
+        try std.testing.expect(false);
+    }
+}
+
+test "object passing to partial - bool default to false" {
+    var data = zmpl.Data.init(std.testing.allocator);
+    defer data.deinit();
+
+    var root = try data.root(.object);
+    var user = try data.object();
+
+    try user.put("email", data.string("alex@example.com"));
+    try user.put("name", data.string("Alex Johnson"));
+    // Missing is_subscriber key, default to false
+
+    try root.put("user", user);
+
+    if (zmpl.find("object_root_layout")) |template| {
+        const output = try template.render(&data, Context, .{}, &.{}, .{});
+
+        try std.testing.expectEqualStrings(
+            \\<h1>User</h1>
+            \\<div>User email: alex@example.com</div>
+            \\<div>User name: Alex Johnson</div>
+            \\
+            \\<div>Not a subscriber.</div>
             \\
         , output);
     } else {
