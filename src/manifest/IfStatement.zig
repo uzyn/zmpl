@@ -119,6 +119,18 @@ fn writeNode(self: IfStatement, node: std.zig.Ast.Node.Index, writer: anytype) !
 
             try writer.writeByte(')');
         },
+        .field_access => {
+            const span = self.ast.nodeToSpan(node);
+            const source = self.ast.source[span.start..span.end];
+
+            if (std.mem.indexOfScalar(u8, source, '.')) |dot_pos| {
+                const obj_name = source[0..dot_pos];
+                const field_name = source[dot_pos + 1 ..];
+                try writer.print("(try __zmpl.getProperty({s}, \"{s}\"))", .{ obj_name, field_name });
+            } else {
+                try writer.writeAll(source); // Fall back
+            }
+        },
         .@"if" => {
             if (true) return; // TODO
             const full_if = self.ast.ifFull(node);

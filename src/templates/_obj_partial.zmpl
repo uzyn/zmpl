@@ -3,7 +3,7 @@
 <div>User name: {{user.name}}</div>
 
 @if (user.email == "john@example.com")
-  <div>Welcome, John!</div>
+<div>Welcome, John!</div>
 @else
-  <div>Not John.</div>
+<div>Not John.</div>
 @end

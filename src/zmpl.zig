@@ -44,6 +44,16 @@ pub fn sanitize(writer: anytype, input: []const u8) !void {
     _ = try fmt.sanitize(input);
 }
 
+/// Helper function for accessing properties from both ZmplValue objects and regular objects
+/// Used by @if for field access
+pub fn getProperty(obj: anytype, field_name: []const u8) ![]const u8 {
+    if (comptime isZmplValue(@TypeOf(obj))) {
+        return try obj.chainRefT([]const u8, field_name);
+    } else {
+        return try std.fmt.allocPrint(std.heap.page_allocator, "{}", .{@field(obj, field_name)});
+    }
+}
+
 test {
     std.testing.refAllDecls(@This());
 }

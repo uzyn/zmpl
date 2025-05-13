@@ -75,7 +75,7 @@ test "object passing to partial" {
     }
 }
 
-test "object passing to partial with string comparison - non-matching email" {
+test "object passing to partial with @if field access" {
     var data = zmpl.Data.init(std.testing.allocator);
     defer data.deinit();
 
